@@ -14,9 +14,16 @@ const AppNavigator: React.FC = () => {
     <NavigationContainer>
       <Stack.Navigator 
         screenOptions={{
-          headerStyle: { backgroundColor: '#007BFF' },
+          headerStyle: { 
+            backgroundColor: '#007BFF', 
+            height: 50 // Reduced header height
+          },
           headerTintColor: '#fff',
-          headerTitleAlign: 'center',
+          headerTitleAlign: 'left', // Move title to the left
+          headerTitleStyle: { 
+            fontSize: 18, // Make text smaller
+            fontWeight: 'bold',
+          },
         }}
       >
         {/* Job Finder Screen */}
