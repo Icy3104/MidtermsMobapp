@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, Image, StyleSheet, StatusBar, ActivityIndicator } from 'react-native';
+import { 
+  View, Text, TextInput, FlatList, TouchableOpacity, 
+  Image, StyleSheet, StatusBar, ActivityIndicator 
+} from 'react-native';
 import { useJobContext, Job } from '../Context/Jobcontext';
+import { useNavigation } from '@react-navigation/native';
 
 const Jobfinderscreen: React.FC = () => {
-  const { jobs, saveJob, fetchJobs } = useJobContext();
+  const { jobs, saveJob, fetchJobs, savedJobs } = useJobContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const loadJobs = async () => {
-      await fetchJobs(); // Ensure jobs are fetched from API
+      await fetchJobs();
       setLoading(false);
     };
     loadJobs();
@@ -40,23 +45,41 @@ const Jobfinderscreen: React.FC = () => {
         <FlatList
           data={filteredJobs}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.jobCard}>
-              {item.companyLogo ? (
-                <Image source={{ uri: item.companyLogo }} style={styles.logo} />
-              ) : null}
-              <View style={styles.jobInfo}>
-                <Text style={styles.jobTitle}>{item.title}</Text>
-                <Text style={styles.companyName}>{item.companyName}</Text>
-                <Text style={styles.workModel}>{item.workModel}</Text>
-                <TouchableOpacity style={styles.saveButton} onPress={() => saveJob(item)}>
-                  <Text style={styles.saveButtonText}>Save Job</Text>
-                </TouchableOpacity>
+          renderItem={({ item }) => {
+            const isSaved = savedJobs.some(job => job.id === item.id);
+
+            return (
+              <View style={styles.jobCard}>
+                {item.companyLogo ? (
+                  <Image source={{ uri: item.companyLogo }} style={styles.logo} />
+                ) : null}
+                <View style={styles.jobInfo}>
+                  <Text style={styles.jobTitle}>{item.title}</Text>
+                  <Text style={styles.companyName}>{item.companyName}</Text>
+                  <Text style={styles.workModel}>{item.workModel}</Text>
+
+                  {/* Save Job Button */}
+                  <TouchableOpacity 
+                    style={[styles.saveButton, isSaved && styles.savedButton]} 
+                    onPress={() => saveJob(item)}
+                    disabled={isSaved}
+                  >
+                    <Text style={styles.saveButtonText}>{isSaved ? "Saved" : "Save Job"}</Text>
+                  </TouchableOpacity>
+
+                  {/* Apply Button */}
+                  <TouchableOpacity 
+                    style={styles.applyButton} 
+                    onPress={() => navigation.navigate('Applicationformscreen', { job: item })}
+                  >
+                    <Text style={styles.applyButtonText}>Apply Now</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          )}
-          contentContainerStyle={{ paddingBottom: 20 }} // Ensures scrollability
-          keyboardShouldPersistTaps="handled" // Allows tapping inputs inside FlatList
+            );
+          }}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          keyboardShouldPersistTaps="handled"
         />
       )}
     </View>
@@ -67,7 +90,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: StatusBar.currentHeight || 10, // Keeps search bar correctly positioned
+    paddingTop: StatusBar.currentHeight || 10,
   },
   searchBar: {
     height: 40,
@@ -123,6 +146,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   saveButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  savedButton: {
+    backgroundColor: '#28A745', // Green color for saved jobs
+  },
+  applyButton: {
+    marginTop: 5,
+    backgroundColor: '#28A745',
+    paddingVertical: 5,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  applyButtonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
