@@ -11,7 +11,6 @@ export interface Job {
     companyName: string;
     companyLogo: string;
     workModel: string;
-    salary: string;
 }
 
 interface JobContextType {
@@ -34,12 +33,11 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const response = await axios.get(API_URL);
       if (response.data && Array.isArray(response.data.jobs)) {
         const jobsWithId = response.data.jobs.map((job: any) => ({
-            id: uuid.v4().toString(),
+            id: uuid.v4().toString(), // Ensure unique ID for each job
             title: job.title || 'No Title',
             companyName: job.companyName || 'Unknown Company',
             workModel: job.workModel || 'Unknown',
             companyLogo: job.companyLogo || '',
-            salary: job.salary || 'Not specified',
         }));
         setJobs(jobsWithId);
       }
@@ -48,10 +46,10 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  // Save Job
+  // Save Job (Prevents Duplicates)
   const saveJob = (job: Job) => {
     setSavedJobs((prevJobs) => {
-      if (!prevJobs.some((saved) => saved.id === job.id)) {
+      if (!prevJobs.some((saved) => saved.companyName === job.companyName && saved.title === job.title)) {
         return [...prevJobs, job];
       }
       return prevJobs;
@@ -62,6 +60,10 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const removeJob = (jobId: string) => {
     setSavedJobs((prevJobs) => prevJobs.filter((job) => job.id !== jobId));
   };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
 
   return (
     <JobContext.Provider value={{ jobs, savedJobs, fetchJobs, saveJob, removeJob }}>
