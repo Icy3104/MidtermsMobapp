@@ -1,11 +1,14 @@
 import React from 'react';
 import { JobProvider } from './Context/Jobcontext';
-import AppNavigator from './Navigator/Appnavigator'; // Corrected import
+import { NavigationContainer } from '@react-navigation/native';
+import AppNavigator from './Navigator/Appnavigator';
 
 const App = () => {
   return (
     <JobProvider>
-      <AppNavigator /> {/* Using Navigation instead of a single screen */}
+      <NavigationContainer>
+        <AppNavigator />
+      </NavigationContainer>
     </JobProvider>
   );
 };
