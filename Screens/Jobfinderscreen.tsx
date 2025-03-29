@@ -5,7 +5,7 @@ import { useJobContext, Job } from '../Context/Jobcontext';
 const Jobfinderscreen: React.FC = () => {
   const { jobs, saveJob, fetchJobs } = useJobContext();
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = usestate(true);
 
   useEffect(() => {
     const loadJobs = async () => {
