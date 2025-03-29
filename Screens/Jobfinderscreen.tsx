@@ -25,7 +25,7 @@ const Jobfinderscreen: React.FC = () => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-      {/* Search Bar (Unchanged) */}
+      {/* Search Bar */}
       <TextInput
         style={styles.searchBar}
         placeholder="Search jobs..."
@@ -55,7 +55,8 @@ const Jobfinderscreen: React.FC = () => {
               </View>
             </View>
           )}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingBottom: 20 }} // Ensures scrollability
+          keyboardShouldPersistTaps="handled" // Allows tapping inputs inside FlatList
         />
       )}
     </View>
