@@ -1,34 +1,31 @@
-// Screens/Jobfinderscreen.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { useJobContext, Job } from '../Context/Jobcontext';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { useJobContext } from '../Context/Jobcontext';
 
 const Jobfinderscreen = () => {
   const { jobs, fetchJobs, saveJob } = useJobContext();
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
 
   useEffect(() => {
     fetchJobs();
   }, []);
 
-  useEffect(() => {
-    setFilteredJobs(
-      jobs.filter((job) =>
-        job.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    );
-  }, [searchQuery, jobs]);
+  // Filter jobs based on search input
+  const filteredJobs = jobs.filter(job =>
+    job.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <View style={styles.container}>
+      {/* Search Bar */}
       <TextInput
-        style={styles.searchBar}
+        style={styles.searchInput}
         placeholder="Search jobs..."
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
 
+      {/* Scrollable Job List */}
       <FlatList
         data={filteredJobs}
         keyExtractor={(item) => item.id}
@@ -39,11 +36,8 @@ const Jobfinderscreen = () => {
             ) : null}
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.company}>{item.companyName}</Text>
-            <Text style={styles.salary}>{item.salary}</Text>
-            <TouchableOpacity
-              style={styles.saveButton}
-              onPress={() => saveJob(item)}
-            >
+            <Text style={styles.salary}>{item.workModel || 'Not specified'}</Text>
+            <TouchableOpacity onPress={() => saveJob(item)} style={styles.saveButton}>
               <Text style={styles.buttonText}>Save Job</Text>
             </TouchableOpacity>
           </View>
@@ -56,10 +50,10 @@ const Jobfinderscreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 10,
     backgroundColor: '#fff',
   },
-  searchBar: {
+  searchInput: {
     height: 40,
     borderColor: '#ccc',
     borderWidth: 1,
@@ -68,18 +62,20 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   jobCard: {
-    padding: 15,
-    marginVertical: 10,
     backgroundColor: '#f9f9f9',
+    padding: 15,
+    marginBottom: 10,
     borderRadius: 8,
     shadowColor: '#000',
     shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
     elevation: 2,
   },
   logo: {
     width: 50,
     height: 50,
+    resizeMode: 'contain',
     marginBottom: 10,
   },
   title: {
@@ -87,23 +83,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   company: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#666',
   },
   salary: {
     fontSize: 14,
+    fontWeight: 'bold',
     color: '#444',
   },
   saveButton: {
     marginTop: 10,
-    backgroundColor: '#007BFF',
-    padding: 10,
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
     borderRadius: 5,
     alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
-    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 
