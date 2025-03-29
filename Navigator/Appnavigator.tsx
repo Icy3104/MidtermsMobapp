@@ -14,37 +14,25 @@ const AppNavigator: React.FC = () => {
     <NavigationContainer>
       <Stack.Navigator 
         screenOptions={{
-          headerStyle: { 
-            backgroundColor: '#007BFF', 
-            height: 50 // Reduced header height
-          },
-          headerTintColor: '#fff',
-          headerTitleAlign: 'left', // Move title to the left
-          headerTitleStyle: { 
-            fontSize: 18, // Make text smaller
-            fontWeight: 'bold',
-          },
+          headerShown: false, // ❌ Completely remove the header for all screens
         }}
       >
         {/* Job Finder Screen */}
         <Stack.Screen 
           name="Jobfinderscreen" 
           component={Jobfinderscreen} 
-          options={{ title: 'Job Finder' }} 
         />
 
         {/* Saved Jobs Screen */}
         <Stack.Screen 
           name="Savejobscreen" 
           component={Savejobscreen} 
-          options={{ title: 'Saved Jobs' }} 
         />
 
         {/* Application Form Screen */}
         <Stack.Screen 
           name="Applicationformscreen" 
           component={Applicationformscreen} 
-          options={{ title: 'Apply for Job' }} 
         />
       </Stack.Navigator>
     </NavigationContainer>
