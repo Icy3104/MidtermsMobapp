@@ -1,11 +1,11 @@
 import React from 'react';
 import { JobProvider } from './Context/Jobcontext';
-import Jobfinderscreen from './Screens/Jobfinderscreen';
+import AppNavigator from './Navigator/Appnavigator'; // Corrected import
 
 const App = () => {
   return (
     <JobProvider>
-      <Jobfinderscreen />
+      <AppNavigator /> {/* Using Navigation instead of a single screen */}
     </JobProvider>
   );
 };

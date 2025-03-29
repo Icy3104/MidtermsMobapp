@@ -5,12 +5,13 @@ import {
 } from 'react-native';
 import { useJobContext, Job } from '../Context/Jobcontext';
 import { useNavigation } from '@react-navigation/native';
+import { JobfinderScreenNavigationProp } from '../Context/types';
 
 const Jobfinderscreen: React.FC = () => {
   const { jobs, saveJob, fetchJobs, savedJobs } = useJobContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const navigation = useNavigation();
+  const navigation = useNavigation<JobfinderScreenNavigationProp>();
 
   useEffect(() => {
     const loadJobs = async () => {
@@ -26,11 +27,47 @@ const Jobfinderscreen: React.FC = () => {
     job.companyName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const renderJobItem = ({ item }: { item: Job }) => {
+    const isSaved = savedJobs.some(job => job.id === item.id);
+
+    return (
+      <View style={styles.jobCard}>
+        {item.companyLogo && <Image source={{ uri: item.companyLogo }} style={styles.logo} />}
+        <View style={styles.jobInfo}>
+          <Text style={styles.jobTitle}>{item.title}</Text>
+          <Text style={styles.companyName}>{item.companyName}</Text>
+          <Text style={styles.workModel}>{item.workModel}</Text>
+
+          <TouchableOpacity 
+            style={[styles.saveButton, isSaved && styles.savedButton]} 
+            onPress={() => saveJob(item)}
+            disabled={isSaved}
+          >
+            <Text style={styles.saveButtonText}>{isSaved ? "Saved" : "Save Job"}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.applyButton} 
+            onPress={() => navigation.navigate('Applicationformscreen', { job: item })}
+          >
+            <Text style={styles.applyButtonText}>Apply Now</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.viewSavedButton} 
+            onPress={() => navigation.navigate('Savejobscreen')}
+          >
+            <Text style={styles.viewSavedButtonText}>View Saved Jobs</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-      {/* Search Bar */}
       <TextInput
         style={styles.searchBar}
         placeholder="Search jobs..."
@@ -38,46 +75,13 @@ const Jobfinderscreen: React.FC = () => {
         onChangeText={setSearchQuery}
       />
 
-      {/* Show Loading Indicator Until Jobs Are Fetched */}
       {loading ? (
         <ActivityIndicator size="large" color="#007BFF" style={styles.loading} />
       ) : (
         <FlatList
           data={filteredJobs}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => {
-            const isSaved = savedJobs.some(job => job.id === item.id);
-
-            return (
-              <View style={styles.jobCard}>
-                {item.companyLogo ? (
-                  <Image source={{ uri: item.companyLogo }} style={styles.logo} />
-                ) : null}
-                <View style={styles.jobInfo}>
-                  <Text style={styles.jobTitle}>{item.title}</Text>
-                  <Text style={styles.companyName}>{item.companyName}</Text>
-                  <Text style={styles.workModel}>{item.workModel}</Text>
-
-                  {/* Save Job Button */}
-                  <TouchableOpacity 
-                    style={[styles.saveButton, isSaved && styles.savedButton]} 
-                    onPress={() => saveJob(item)}
-                    disabled={isSaved}
-                  >
-                    <Text style={styles.saveButtonText}>{isSaved ? "Saved" : "Save Job"}</Text>
-                  </TouchableOpacity>
-
-                  {/* Apply Button */}
-                  <TouchableOpacity 
-                    style={styles.applyButton} 
-                    onPress={() => navigation.navigate('Applicationformscreen', { job: item })}
-                  >
-                    <Text style={styles.applyButtonText}>Apply Now</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            );
-          }}
+          renderItem={renderJobItem}
           contentContainerStyle={{ paddingBottom: 20 }}
           keyboardShouldPersistTaps="handled"
         />
@@ -150,7 +154,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   savedButton: {
-    backgroundColor: '#28A745', // Green color for saved jobs
+    backgroundColor: '#28A745',
   },
   applyButton: {
     marginTop: 5,
@@ -161,6 +165,17 @@ const styles = StyleSheet.create({
   },
   applyButtonText: {
     color: '#fff',
+    fontWeight: 'bold',
+  },
+  viewSavedButton: {
+    marginTop: 5,
+    backgroundColor: '#FFC107',
+    paddingVertical: 5,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  viewSavedButtonText: {
+    color: '#000',
     fontWeight: 'bold',
   },
 });
